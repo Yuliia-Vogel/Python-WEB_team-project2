@@ -25,14 +25,17 @@
 
   <!-- Фільтр за тегами -->
   <form method="GET" action="{% url 'notes:note-list' %}">
-    <label for="tag">Фільтр за тегом:</label>
+    <label for="tag" aria-label="Фільтр за тегом">Фільтр за тегом:</label>
     <select name="tag" id="tag" onchange="this.form.submit()">
         <option value="">Всі теги</option>
         {% for tag in tags %}
-            <option value="{{ tag.name }}" {% if request.GET.tag == tag.name %}selected{% endif %}>
+            <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>
                 {{ tag.name }}
             </option>
         {% endfor %}
     </select>
-  </form>
+    <button type="button" onclick="document.getElementById('tag').value=''; this.form.submit();">
+        Скинути
+    </button>
+</form>
 {% endblock %}

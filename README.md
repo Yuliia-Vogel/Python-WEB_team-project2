@@ -64,4 +64,7 @@ Finally, to stop the server, go to terminal where server is running, and press C
 The server will be stopped.
 
 
+Work with FILES.
+
+
 

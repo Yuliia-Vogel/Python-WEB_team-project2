@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Новини</h2>
+<ul>
+    <li><a href="#" onclick="loadNews('sport')">Спорт</a></li>
+    <li><a href="#" onclick="loadNews('politics')">Політика</a></li>
+    <li><a href="#" onclick="loadNews('weather')">Погода</a></li>
+    <li><a href="#" onclick="loadNews('minfin')">Фінанси</a></li>
+</ul>
+
+<iframe id="newsFrame" src="https://news.obozrevatel.com/ukr/sport/" width="100%" height="600px"></iframe>
+
+<script>
+    function loadNews(category) {
+        let urls = {
+            'sport': 'https://news.obozrevatel.com/ukr/sport/',
+            'politics': 'https://www.obozrevatel.com/ukr/politics-news/',
+            'weather': 'https://meteolabs.com.ua/%D1%83%D0%BA%D1%80/%D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0_%D0%BA%D0%B8%D1%97%D0%B2/#google_vignette',
+            'minfin': 'https://minfin.com.ua/ua/currency/eur/'
+        };
+        document.getElementById('newsFrame').src = urls[category];
+    }
+</script>
+{% endblock %}
