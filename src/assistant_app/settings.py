@@ -81,6 +81,10 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 WSGI_APPLICATION = 'assistant_app.wsgi.application'
 
 DATABASES = {

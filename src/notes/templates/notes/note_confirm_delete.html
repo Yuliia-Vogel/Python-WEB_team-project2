@@ -1,10 +1,26 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>Видалити нотатку "{{ note.title }}"?</h2>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Так, видалити</button>
-    <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Скасувати</a>
-  </form>
+{% block title %}Видалити нотатку{% endblock %}
+
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>Видалити нотатку "{{ note.title }}"?</h1>
+            </div>
+        </div>
+        <div class="confirmation-form">
+            <form method="post">
+                {% csrf_token %}
+                <p>Ви впевнені, що хочете видалити цю нотатку? Цю дію неможливо скасувати.</p>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">Так, видалити</button>
+                    <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Скасувати</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

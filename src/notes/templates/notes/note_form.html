@@ -1,11 +1,28 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>{% if object %}Редагувати{% else %}Додати{% endif %} нотатку</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Зберегти</button>
-    <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Назад</a>
-  </form>
+{% block title %}{% if object %}Редагувати{% else %}Додати{% endif %} нотатку{% endblock %}
+
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>{% if object %}Редагувати{% else %}Додати{% endif %} нотатку</h1>
+            </div>
+        </div>
+        <div class="contact-form">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Зберегти</button>
+                    <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

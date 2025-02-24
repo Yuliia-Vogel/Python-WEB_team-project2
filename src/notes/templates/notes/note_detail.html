@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>{{ note.title }}</h2>
-  <p>{{ note.content }}</p>
-  <p><strong>Теги:</strong> {% for tag in note.tags.all %} {{ tag.name }} {% endfor %}</p>
-  <a href="{% url 'notes:note-edit' note.pk %}" class="btn btn-warning">Редагувати</a>
-  <a href="{% url 'notes:note-delete' note.pk %}" class="btn btn-danger">Видалити</a>
-  <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Назад</a>
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>{{ note.title }}</h1>
+            </div>
+        </div>
+        <div class="note-details">
+            <p>{{ note.content }}</p>
+            <p><strong>Теги:</strong> {% for tag in note.tags.all %} {{ tag.name }} {% endfor %}</p>
+            <div class="form-actions">
+                <a href="{% url 'notes:note-edit' note.pk %}" class="btn btn-warning">Редагувати</a>
+                <a href="{% url 'notes:note-delete' note.pk %}" class="btn btn-danger">Видалити</a>
+                <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Назад</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

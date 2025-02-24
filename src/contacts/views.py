@@ -73,7 +73,6 @@ class ContactListView(LoginRequiredMixin, ListView):
                         )
                         contacts = contacts.filter(cross_year_query)
 
-                
             except ValueError:
                 pass
 
@@ -81,6 +80,12 @@ class ContactListView(LoginRequiredMixin, ListView):
             F("first_name").asc(nulls_last=True),
             F("last_name").asc(nulls_last=True),
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_type"] = "contacts"
+        context["query"] = self.request.GET.get("query", "")
+        return context
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):

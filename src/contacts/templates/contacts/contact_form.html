@@ -1,13 +1,26 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <h2>{% if object %}Редагувати{% else %}Додати{% endif %} контакт</h2>
-    <form method="post">
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'contacts/styles.css' %}">
+</head>
+
+{% block title %}{% if object %}Редагувати контакт{% else %}Додати контакт{% endif %}{% endblock %}
+
+{% block dashboard %}
+<div class="card">
+    <h2 class="contacts-title">{% if object %}Редагувати контакт{% else %}Додати контакт{% endif %}</h2>
+
+    <!-- Contact Form -->
+    <form method="post" class="contact-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Зберегти</button>
-        <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Назад</a>
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="add-contact-btn">Зберегти</button>
+            <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Назад</a>
+        </div>
     </form>
+</div>
 {% endblock %}
-
-

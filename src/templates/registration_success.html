@@ -2,8 +2,19 @@
 
 {% block title %}Успішна реєстрація{% endblock %}
 
-{% block content %}
-    <h2>Реєстрація пройшла успішно!</h2>
-    <p>Ваш акаунт створено. Ви можете авторизуватися для доступу до функціоналу.</p>
-    <a href="{% url 'users:login_page' %}" class="btn btn-primary">Перейти до сторінки входу</a>
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>Реєстрація пройшла успішно!</h1>
+            </div>
+        </div>
+        <div class="success-message">
+            <p>Ваш акаунт створено. Ви можете авторизуватися для доступу до функціоналу.</p>
+            <a href="{% url 'users:login_page' %}" class="btn btn-primary">Перейти до сторінки входу</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,79 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <title>{% block title %}Personal Assistant{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Sidebar Toggle Button -->
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">Personal Assistant</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'notes:note-list' %}">Notes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'notes:tag-list' %}">Tags</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contacts:contact-list' %}">Contacts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'files:file_list' %}">Files</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'news:news_summary' %}">News</a>
-                        </li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav d-flex align-items-center">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <span class="navbar-text text-light me-3">
-                                Привіт, {{ user.username }}!
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light">Вийти</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light me-2" href="{% url 'users:login_page' %}">Увійти</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light me-2" href="{% url 'users:register_page' %}">Реєстрація</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="profile">
+          {% if user.is_authenticated %}
+          {% comment %} <p class="user-name">{{ user.username }}</p> {% endcomment %}
+          {% else %}
+          <p>Guest</p>
+          {% endif %}
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        {% if messages %}
-            <div class="mb-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
+        <nav>
+          <ul>
+            {% if user.is_authenticated %}
+            <div>
+              <li>
+                <a href="{% url 'notes:note-list' %}"><span class="emoji">📝</span><span class="link-title">Notes</span></a>
+              </li>
+              <li>
+                <a href="{% url 'notes:tag-list' %}"><span class="emoji">🏷️</span><span class="link-title">Tags</span></a>
+              </li>
+              <li>
+                <a href="{% url 'contacts:contact-list' %}"><span class="emoji">📇</span><span class="link-title">Contacts</span></a>
+              </li>
+              <li>
+                <a href="{% url 'files:file_list' %}"><span class="emoji">📁</span><span class="link-title">Files</span></a>
+              </li>
             </div>
-        {% endif %}
-        {% block content %}{% endblock %}
+            {% else %}
+            <li><a href="{% url 'users:login_page' %}">Login</a></li>
+            <li><a href="{% url 'users:register_page' %}">Register</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          {% if user.is_authenticated %}
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <button class="logout" type="submit">Logout</button>
+          </form>
+          {% endif %}
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Header Section -->
+        <header class="header">
+          <div class="header-logo">
+            {% comment %} <img src="{% static 'images/logo.png' %}" alt="Logo" /> {% endcomment %}
+            <a href="#">
+              <h1>Personal Assistant</h1>
+            </a>
+          </div>
+          
+          <div class="search-bar">
+            <div class="header-search">
+              <form method="get" action="">
+                <input type="text" name="query" value="{{ query }}" placeholder="Search..." />
+                <input type="hidden" name="search_type" value="{{ search_type }}" />
+              </form>
+            </div>
+            <div class="header-settings">
+              <a href="javascript:void(0);" id="settings-btn">⚙</a>
+            </div>
+          </div>
+
+        </header>
+
+        <!-- Dashboard Section -->
+        <section class="dashboard">
+          {% block dashboard %}
+          <div class="card">📝 Quick Notes</div>
+          <div class="card">📇 Contact List</div>
+          <div class="card">📁 File Storage</div>
+          <div class="card">📰 Latest News</div>
+          {% endblock %}
+        </section>
+      </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <h3 class="filters-title">Filters</h3>
+      <form method="GET" action="{% url 'contacts:contact-list' %}">
+        <input type="number" name="days_ahead" placeholder="Birthday in..." value="{{ request.GET.days_ahead }}" />
+        <button type="submit">Filter</button>
+      </form>
+    </div>
+
+    <script>
+      // Toggle sidebar function
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("open");
+      }
+
+      // Settings modal toggle
+      var modal = document.getElementById("settings-modal");
+      var btn = document.getElementById("settings-btn");
+
+      btn.onclick = function () {
+        modal.style.display = modal.style.display === "block" ? "none" : "block";
+      };
+
+      window.onclick = function (event) {
+        if (event.target !== btn && !modal.contains(event.target)) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
+  </body>
 </html>

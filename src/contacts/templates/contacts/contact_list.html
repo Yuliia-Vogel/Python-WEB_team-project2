@@ -1,62 +1,50 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <h2>Контакти</h2>
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'contacts/styles.css' %}">
+</head>
 
-    <!-- Combined Search and Birthday Filter Form -->
-    <form method="GET" action="{% url 'contacts:contact-list' %}">
-        <!-- Search Input -->
-        <div class="form-group">
-            <input
-                type="text"
-                class="form-control"
-                style="margin: 12px 0"
-                name="query"
-                placeholder="Пошук контактів..."
-                value="{{ request.GET.query }}"
-            />
-        </div>
+{% block title %}Contacts List{% endblock %}
 
-        <!-- Birthday Ahead Input -->
-        <div class="form-group">
-            <input
-                type="number"
-                class="form-control"
-                style="margin: 12px 0"
-                name="days_ahead"
-                placeholder="Днів до дня народження (наприклад, 7)"
-                value="{{ request.GET.days_ahead }}"
-                min="0"
-            />
-        </div>
+{% block dashboard %}
+<div class="card">
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary mt-2" style="margin-bottom: 12px">Застосувати фільтри</button>
-    </form>
+    <h2 class="contacts-title">Контакти</h2>
 
     <!-- Add Contact Button -->
-    <a href="{% url 'contacts:contact-create' %}" class="btn btn-success">Додати контакт</a>
+    <a href="{% url 'contacts:contact-create' %}" class="add-contact-btn">Додати контакт</a>
 
     <!-- Contacts List -->
-    <ul class="list-group mt-3">
+    <ul class="contact-list">
         {% for contact in contacts %}
-            <li class="list-group-item">
+            <li class="contact-item">
                 <a href="{% url 'contacts:contact-detail' contact.pk %}">
                     {{ contact.first_name }} {{ contact.last_name }}
+                    
+                </a>
+                <a class="phone-item" href="{% url 'contacts:contact-detail' contact.pk %}">
                     {% if contact.birthday %}
                         ({{ contact.phone }})
                     {% endif %}
                 </a>
+                <p>
+                    {% if contact.birthday %}
+                        ({{ contact.birthday }})
+                    {% endif %}
+                </p>
             </li>
+            
         {% empty %}
-            <li class="list-group-item">Немає контактів.</li>
+            <li class="contact-item">Немає контактів.</li>
         {% endfor %}
     </ul>
 
     <!-- Display Filter Message -->
     {% if request.GET.days_ahead %}
-        <div class="alert alert-info mt-3">
+        <div class="filter-message">
             Показано контакти з днями народження через {{ request.GET.days_ahead }} днів.
         </div>
     {% endif %}
+</div>
 {% endblock %}

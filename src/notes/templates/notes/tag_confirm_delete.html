@@ -1,10 +1,26 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>Видалити тег "{{ tag.name }}"?</h2>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Так, видалити</button>
-    <a href="{% url 'notes:tag-list' %}" class="btn btn-secondary">Скасувати</a>
-  </form>
+{% block title %}Видалити тег{% endblock %}
+
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>Видалити тег "{{ tag.name }}"?</h1>
+            </div>
+        </div>
+        <div class="confirmation-form">
+            <form method="post">
+                {% csrf_token %}
+                <p>Ви впевнені, що хочете видалити цей тег? Цю дію неможливо скасувати.</p>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">Так, видалити</button>
+                    <a href="{% url 'notes:tag-list' %}" class="btn btn-secondary">Скасувати</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

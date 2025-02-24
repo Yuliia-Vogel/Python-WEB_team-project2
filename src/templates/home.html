@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>Ласкаво просимо до Personal Assistant!</h2>
-  {% if user.is_authenticated %}
-      <p>Оберіть функцію у меню.</p>
-  {% endif %}
+{% block dashboard %}
+<div class="card">
+    <h2 class="welcome-title">Ласкаво просимо до Personal Assistant!</h2>
+    {% if user.is_authenticated %}
+        <p class="welcome-message">Оберіть функцію у меню.</p>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <h2>{{ contact.first_name }} {{ contact.last_name }}</h2>
-    <p>Phone number: {{ contact.phone }}</p>
-    <p>Email: {{ contact.email }}</p>
-    <p>Address: {{ contact.address }}</p>
-    <p>Birthday: {{ contact.birthday }}</p>
-    <a href="{% url 'contacts:contact-update' contact.pk %}" class="btn btn-warning">Редагувати</a>
-    <a href="{% url 'contacts:contact-delete' contact.pk %}" class="btn btn-danger">Видалити</a>
-    <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Назад</a>
-{% endblock %}
+{% block dashboard %}
+<div class="card">
+    <h2 class="contacts-title">{{ contact.first_name }} {{ contact.last_name }}</h2>
 
+    <!-- Contact Details -->
+    <div class="contact-details">
+        <p><strong>Phone number:</strong> {{ contact.phone }}</p>
+        <p><strong>Email:</strong> {{ contact.email }}</p>
+        <p><strong>Address:</strong> {{ contact.address }}</p>
+        <p><strong>Birthday:</strong> {{ contact.birthday }}</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+        <a href="{% url 'contacts:contact-update' contact.pk %}" class="btn btn-warning">Редагувати</a>
+        <a href="{% url 'contacts:contact-delete' contact.pk %}" class="btn btn-danger">Видалити</a>
+        <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Назад</a>
+    </div>
+</div>
+{% endblock %}

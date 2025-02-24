@@ -1,41 +1,48 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>Нотатки ({{ notes|length }})</h2>
+{% block title %}Нотатки{% endblock %}
 
-  <!-- Форма пошуку -->
-  <form method="GET" action="{% url 'notes:note-list' %}" class="mb-3">
-    <input type="text" name="q" placeholder="Пошук нотаток..." value="{{ search_query }}" class="form-control">
-    <button type="submit" class="btn btn-primary mt-2">Шукати</button>
-  </form>
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>Нотатки ({{ notes|length }})</h1>
+            </div>
+        </div>
 
-  <!-- Кнопка для додавання нової нотатки -->
-  <a href="{% url 'notes:note-create' %}" class="btn btn-primary">Додати нотатку</a>
+      
 
-  <!-- Список нотаток -->
-  <ul class="list-group mt-3">
-    {% for note in notes %}
-      <li class="list-group-item">
-        <a href="{% url 'notes:note-detail' note.pk %}">{{ note.title }}</a>
-      </li>
-    {% empty %}
-      <li class="list-group-item">Немає нотаток.</li>
-    {% endfor %}
-  </ul>
+        <!-- Кнопка для додавання нової нотатки -->
+        <a href="{% url 'notes:note-create' %}" class="btn btn-primary">Додати нотатку</a>
 
-  <!-- Фільтр за тегами -->
-  <form method="GET" action="{% url 'notes:note-list' %}">
-    <label for="tag" aria-label="Фільтр за тегом">Фільтр за тегом:</label>
-    <select name="tag" id="tag" onchange="this.form.submit()">
-        <option value="">Всі теги</option>
-        {% for tag in tags %}
-            <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>
-                {{ tag.name }}
-            </option>
-        {% endfor %}
-    </select>
-    <button type="button" onclick="document.getElementById('tag').value=''; this.form.submit();">
-        Скинути
-    </button>
-</form>
+        <!-- Список нотаток -->
+        <ul class="contact-list mt-3">
+            {% for note in notes %}
+                <li class="contact-item">
+                    <a href="{% url 'notes:note-detail' note.pk %}">{{ note.title }}</a>
+                </li>
+            {% empty %}
+                <li class="contact-item">Немає нотаток.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Фільтр за тегами -->
+        <form method="GET" action="{% url 'notes:note-list' %}" class="filter-form">
+            <label for="tag" class="filter-label">Фільтр за тегом:</label>
+            <select name="tag" id="tag" onchange="this.form.submit()" class="filter-select">
+                <option value="">Всі теги</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>
+                        {{ tag.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="button" onclick="document.getElementById('tag').value=''; this.form.submit();" class="btn btn-secondary">
+                Скинути
+            </button>
+        </form>
+    </div>
+</div>
 {% endblock %}

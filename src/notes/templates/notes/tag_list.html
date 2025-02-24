@@ -1,16 +1,31 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h2>Теги ({{ tags|length }})</h2>
-  <a href="{% url 'notes:tag-create' %}" class="btn btn-primary">Додати тег</a>
-  <ul class="list-group mt-3">
-    {% for tag in tags %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ tag.name }}
-        <a href="{% url 'notes:tag-delete' tag.pk %}" class="btn btn-danger btn-sm">Видалити</a>
-      </li>
-    {% empty %}
-      <li class="list-group-item">Немає тегів.</li>
-    {% endfor %}
-  </ul>
+{% block title %}Теги{% endblock %}
+
+{% block dashboard %}
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+                <h1>Теги ({{ tags|length }})</h1>
+            </div>
+        </div>
+
+        <!-- Кнопка для додавання нового тегу -->
+        <a href="{% url 'notes:tag-create' %}" class="btn btn-primary">Додати тег</a>
+
+        <!-- Список тегів -->
+        <ul class="contact-list mt-3">
+            {% for tag in tags %}
+                <li class="contact-item d-flex justify-content-between align-items-center">
+                    {{ tag.name }}
+                    <a href="{% url 'notes:tag-delete' tag.pk %}" class="btn btn-danger btn-sm">Видалити</a>
+                </li>
+            {% empty %}
+                <li class="contact-item">Немає тегів.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

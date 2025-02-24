@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Contacts List{% endblock %}
+
+{% block dashboard %}
+<div class="card">
+
+    <h2>Контакти</h2>
+
+    <!-- Combined Search and Birthday Filter Form -->
+    <form method="GET" action="{% url 'contacts:contact-list' %}">
+        <!-- Search Input -->
+        <div class="form-group">
+            <input
+                type="text"
+                class="form-control"
+                style="margin: 12px 0"
+                name="query"
+                placeholder="Пошук контактів..."
+                value="{{ request.GET.query }}"
+            />
+        </div>
+
+        <!-- Birthday Ahead Input -->
+        <div class="form-group">
+            <input
+                type="number"
+                class="form-control"
+                style="margin: 12px 0"
+                name="days_ahead"
+                placeholder="Днів до дня народження (наприклад, 7)"
+                value="{{ request.GET.days_ahead }}"
+                min="0"
+            />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary mt-2" style="margin-bottom: 12px">Застосувати фільтри</button>
+    </form>
+
+    <!-- Add Contact Button -->
+    <a href="{% url 'contacts:contact-create' %}" class="btn btn-success">Додати контакт</a>
+
+    <!-- Contacts List -->
+    <ul class="list-group mt-3">
+        {% for contact in contacts %}
+            <li class="list-group-item">
+                <a href="{% url 'contacts:contact-detail' contact.pk %}">
+                    {{ contact.first_name }} {{ contact.last_name }}
+                    {% if contact.birthday %}
+                        ({{ contact.phone }})
+                    {% endif %}
+                </a>
+            </li>
+            
+        {% empty %}
+            <li class="list-group-item">Немає контактів.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Display Filter Message -->
+    {% if request.GET.days_ahead %}
+        <div class="alert alert-info mt-3">
+            Показано контакти з днями народження через {{ request.GET.days_ahead }} днів.
+        </div>
+    {% endif %}
+{% endblock %}
