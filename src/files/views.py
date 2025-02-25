@@ -1,12 +1,26 @@
 import requests
-
+import cloudinary.uploader
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.shortcuts import get_object_or_404
-
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UploadFileForm
 from .models import UploadedFile
+
+CATEGORY_MAP = {
+    "images": ["jpg", "jpeg", "png", "gif", "webp", "svg"],
+    "documents": ["pdf", "doc", "docx", "xls", "xlsx", "txt", "ppt", "pptx"],
+    "videos": ["mp4", "avi", "mov", "mkv", "flv", "wmv"],
+    "audio": ["mp3", "wav", "ogg", "flac", "aac", "m4a"],
+    "archives": ["zip", "rar", "7z", "tar", "gz"],
+}
+
+
+def get_file_category(filename):
+    ext = filename.split(".")[-1].lower()
+    for category, extensions in CATEGORY_MAP.items():
+        if ext in extensions:
+            return category
+    return "other"
 
 
 @login_required
@@ -14,32 +28,56 @@ def upload_file(request):
     if request.method == 'POST' and request.FILES['file']:
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_file = UploadedFile(user=request.user)
-            uploaded_file.save(file=request.FILES['file'])  # Передаємо файл у `save()`
+            uploaded_file = request.FILES['file']
+            category = get_file_category(uploaded_file.name)
+
+            # Визначаємо папку на основі email юзера та категорії
+            folder_name = f"users_files/{request.user.email}/{category}"
+
+            # Завантаження на Cloudinary
+            uploaded_data = cloudinary.uploader.upload(
+                uploaded_file,
+                folder=folder_name,
+                resource_type='auto',
+                public_id=uploaded_file.name
+            )
+
+            # Збереження URL у постгресі:
+            UploadedFile.objects.create(user=request.user, 
+                                        file_url=uploaded_data["secure_url"],
+                                        public_id=uploaded_data["public_id"])
             return redirect('files:file_list')
+
     else:
         form = UploadFileForm()
     return render(request, 'assistant_app/upload_file.html', {'form': form})
 
 
-# HEAD-запит до кожного файлу - для того, щоб перевіряти наявність файлів у реальному часі \/
-
 @login_required
 def file_list(request):
-    files = UploadedFile.objects.filter(user=request.user)  # Фільтруємо тільки файли поточного юзера
-    # return render(request, 'assistant_app/file_list.html', {'files': files})
-    # files = request.user.files.all()  # Отримуємо файли з бази
+    files = UploadedFile.objects.filter(user=request.user)  # Фільтруємо файли поточного юзера
+    category = request.GET.get("category", "all")  # Отримуємо категорію з GET-запиту
+
     valid_files = []
 
     for file in files:
         try:
-            response = requests.head(file.file_url, timeout=5)  # Швидкий HEAD-запит
+            response = requests.head(file.file_url, timeout=5)  # Перевіряємо чи файл існує
             if response.status_code == 200:
-                valid_files.append(file)
+                # Отримуємо назву папки з URL файлу
+                folder_name = file.file_url.split("/")[-2]  # передостанній елемент - це папка
+
+                # Фільтруємо за категорією
+                if category == "all" or folder_name == category:
+                    valid_files.append(file)
         except requests.RequestException:
             pass  # Файл не знайдено або інша помилка
 
-    return render(request, "assistant_app/file_list.html", {"files": valid_files})
+    return render(request, "assistant_app/file_list.html", {
+        "files": valid_files,
+        "selected_category": category
+    })
+
 
 @login_required
 def download_file(request, file_id):
@@ -56,3 +94,17 @@ def download_file(request, file_id):
         return response
     else:
         return HttpResponse("File not found", status=404)
+    
+
+@login_required
+def delete_file(request, file_id):
+    file = get_object_or_404(UploadedFile, id=file_id, user=request.user)
+
+    # Видаляємо файл із Cloudinary
+    cloudinary.uploader.destroy(file.public_id)
+
+    # Видаляємо запис із бази
+    file.delete()
+
+    return redirect("files:file_list")
+
