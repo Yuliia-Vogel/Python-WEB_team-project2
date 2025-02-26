@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Successful{% endblock %}
+
+{% block content %}
+    <h2>File was successfully uploaded!</h2>
+    
+    <p>Your file has been uploaded and stored securely.</p>
+    <p><strong>File Name:</strong> {{ file_name }}</p>
+    <p><a href="{{ file_url }}" target="_blank">View File</a></p>
+
+    <div>
+        <a href="{% url 'files:upload_file' %}" class="btn btn-primary">Upload another file</a>
+        <a href="{% url 'files:file_list' %}" class="btn btn-secondary">Back to list of your files</a>
+    </div>
+
+    <!-- Блок з повідомленням про перенаправлення -->
+    <div class="alert alert-success mt-3" role="alert">
+        You will be redirected to your file list in <span id="countdown">5</span> seconds...
+    </div>
+
+    <script>
+        let timeLeft = 5;
+        const countdownElem = document.getElementById("countdown");
+
+        const countdown = setInterval(function() {
+            timeLeft -= 1;
+            countdownElem.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                window.location.href = "{% url 'files:file_list' %}";
+            }
+        }, 1000);
+    </script>
+{% endblock %}

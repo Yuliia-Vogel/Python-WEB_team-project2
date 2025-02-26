@@ -31,10 +31,8 @@ def upload_file(request):
             uploaded_file = request.FILES['file']
             category = get_file_category(uploaded_file.name)
 
-            # Визначаємо папку на основі email юзера та категорії
             folder_name = f"users_files/{request.user.email}/{category}"
 
-            # Завантаження на Cloudinary
             uploaded_data = cloudinary.uploader.upload(
                 uploaded_file,
                 folder=folder_name,
@@ -42,16 +40,18 @@ def upload_file(request):
                 public_id=uploaded_file.name
             )
 
-            # Збереження URL у постгресі:
             UploadedFile.objects.create(user=request.user, 
                                         file_url=uploaded_data["secure_url"],
                                         public_id=uploaded_data["public_id"])
-            return redirect('files:file_list')
+
+            return render(request, 'assistant_app/upload_success.html', {
+                'file_name': uploaded_file.name,
+                'file_url': uploaded_data["secure_url"]
+            })
 
     else:
         form = UploadFileForm()
     return render(request, 'assistant_app/upload_file.html', {'form': form})
-
 
 @login_required
 def file_list(request):
@@ -106,5 +106,6 @@ def delete_file(request, file_id):
     # Видаляємо запис із бази
     file.delete()
 
-    return redirect("files:file_list")
+    return render(request, 'assistant_app/file_deleted.html')
+
 
