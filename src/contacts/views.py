@@ -23,7 +23,7 @@ class ContactListView(LoginRequiredMixin, ListView):
         days_ahead = self.request.GET.get("days_ahead", None)
         user = self.request.user
 
-        contacts = Contact.objects.filter(user=user)  # Тільки контакти поточного користувача
+        contacts = Contact.objects.filter(user=user)
         if query:
             contacts = contacts.filter(
                 Q(first_name__icontains=query)
@@ -99,7 +99,7 @@ class ContactCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("contacts:contact-list")
 
     def form_valid(self, form):
-        form.instance.user = self.request.user  # Прив'язка контакту до користувача
+        form.instance.user = self.request.user
         return super().form_valid(form)
 
 

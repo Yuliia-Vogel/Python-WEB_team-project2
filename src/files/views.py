@@ -1,3 +1,4 @@
+import logging
 import requests
 import cloudinary.uploader
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,7 @@ CATEGORY_MAP = {
     "archives": ["zip", "rar", "7z", "tar", "gz"],
 }
 
+logger = logging.getLogger(__name__)
 
 def get_file_category(filename):
     ext = filename.split(".")[-1].lower()
@@ -39,7 +41,7 @@ def upload_file(request):
                 resource_type='auto',
                 public_id=uploaded_file.name
             )
-
+            logger.info(f"Uploading: {uploaded_file.name}")
             UploadedFile.objects.create(user=request.user, 
                                         file_url=uploaded_data["secure_url"],
                                         public_id=uploaded_data["public_id"])
@@ -100,10 +102,11 @@ def download_file(request, file_id):
 def delete_file(request, file_id):
     file = get_object_or_404(UploadedFile, id=file_id, user=request.user)
 
-    # Видаляємо файл із Cloudinary
-    cloudinary.uploader.destroy(file.public_id)
+    logger.info(f"Deleting: {file.public_id}")
+    # Видаляємо файл із клаудінері
+    # cloudinary.uploader.destroy(file.public_id)
 
-    # Видаляємо запис із бази
+    # gросто видаляємо об'єкт, і `delete()` сам подбає про Cloudinary (бо ми перевизначили функцію видалення в класі UploadedFile)
     file.delete()
 
     return render(request, 'assistant_app/file_deleted.html')

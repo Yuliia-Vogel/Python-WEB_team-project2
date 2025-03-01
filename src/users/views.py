@@ -50,6 +50,45 @@ def login_page(request):
 
     return render(request, "login.html")
 
+def password_reset_request(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        
+        if not email:
+            messages.error(request, "Будь ласка, введіть електронну пошту.")
+            return redirect("users:password_reset_form")
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, "Користувача з такою поштою не знайдено.")
+            return redirect("users:password_reset_form")
+        
+        # Генеруємо токен і посилання на відновлення пароля
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_link = request.build_absolute_uri(
+            reverse('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+        )
+
+        # Відправка листа через SendGrid або SMTP
+        send_mail(
+            'Відновлення пароля',
+            f'Вітаємо!\n\n'
+            f'Ви запросили відновлення пароля для вашого акаунта.\n'
+            f'Щоб скинути пароль, перейдіть за цим посиланням:\n{reset_link}\n\n'
+            f'Якщо ви не надсилали цей запит, просто проігноруйте цей лист.\n\n'
+            f'Дякуємо!',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+        
+        messages.success(request, "Інструкція з відновлення пароля надіслана на вашу електронну пошту.")
+        return redirect("users:password_reset_sent")
+
+    return render(request, "password_reset_form.html")
+
 def password_reset_form_view(request):
     return render(request, "password_reset_form.html")
 
@@ -155,43 +194,6 @@ class ChangePasswordView(APIView):
         return Response({"message": "Password updated successfully!"})
 
 ### 🔹 ВІДНОВЛЕННЯ ПАРОЛЯ (НАДСИЛАННЯ EMAIL)
-from django.urls import reverse
-
-class PasswordResetRequestView(APIView):
-    permission_classes = [AllowAny]
-
-    class InputSerializer(serializers.Serializer):
-        email = serializers.EmailField()
-
-    def post(self, request):
-        serializer = self.InputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data["email"]
-
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({"error": "Користувача з такою поштою не знайдено."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Генеруємо токен і посилання на відновлення пароля
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_link = request.build_absolute_uri(
-            reverse('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-        )
-
-        # Відправка листа через SendGrid
-        send_mail(
-            'Password Reset',
-            f'Перейдіть за посиланням для відновлення пароля: {reset_link}',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],  # Використовуй email з форми
-            fail_silently=False,
-        )
-        # Перенаправлення на сторінку з підтвердженням
-
-        return redirect("users:password_reset_sent")
-
 
 
 ### 🔹 ВІДНОВЛЕННЯ ПАРОЛЯ (ПІДТВЕРДЖЕННЯ)

@@ -8,7 +8,7 @@ The final team project for Python WEB at GO.IT school
 - open Command line 
 - and print command:
 ```
-docker run --name your_db_name -p 5432:5432 -e POSTGRES_PASSWORD=your password_to_db -d postgres
+docker run --name web_project_db -p 5432:5432 -e POSTGRES_PASSWORD=web_project_db_pass -d postgres
 ```
 Please save your DB name and your password, it will be necessary for the .env file.
 
@@ -47,7 +47,7 @@ poetry run python src/utils/gen_secret_key.py
 ```
 You'll receive your unique key, please add it as SECRET_KEY in the .env file.
 
-** You can use specially prepared Cloudinary account, please use credentials for Cloudinery which are in .env.example file (you need only clear the part "should_be_left_" and clear quotation marks).
+** You can use specially prepared Cloudinary account, please use credentials for Cloudinery which are in .env.example file.
 ** In order to use your own Cloudinary account, you can register on https://cloudinary.com/ 
 Save your credentials (CLOUD_NAME, API_KEY and API_SECRET) and use it in the .env file.
 
@@ -63,11 +63,11 @@ python src/manage.py runserver
 
 11) To use the Personal Assistant, the registration is needed.
 
-12) If you forget your parrword, you can press the bottom "Forget password", and the link will appear in your terminal. Please follow this link to create your new password. Please follow the instruction via the link.
+12) If you forget your parrword, you can press the bottom "Forget password", and the link will be sent to your email. Please enter your email-box and follow this link to create your new password. Please follow the instruction via the link.
 
 13) All the data will be saved in the PostgreSQL database inside the docker-container.
 
-14) Uploaded files will be sorten into 6 categories (images, documents, videos, audio, archives and other) and saved in Cloudinery storage in one of the appropriate folder ("images", "documents", "videos", "audio", "archives", "other"). You can upload your file into Personal Assistant, view it (if possible depending on its format), download it or delete it from application.
+14) Uploaded files will be sorten into 6 categories (images, documents, videos, audio, archives and other) and saved in Cloudinery storage in the appropriate folder ("images", "documents", "videos", "audio", "archives" or "other"). You can upload your file into Personal Assistant, view it (if possible depending on its format), download it or delete it from the cloud storage and from current web-application.
 
 15) Please keep in mind usage limits regarding files uploading:
 Maximum image file size - 10 MB

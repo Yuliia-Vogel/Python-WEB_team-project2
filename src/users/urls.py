@@ -1,10 +1,10 @@
 from django.urls import path
 from .views import (
     RegisterView, LoginView, ChangePasswordView,
-    PasswordResetRequestView, PasswordResetConfirmView,
+    PasswordResetConfirmView,
     register_page, login_page, registration_success_view,
     password_reset_form_view, password_reset_done_view, 
-    password_reset_confirm_view, logout_view, password_reset_sent_view, password_reset_complete_view
+    password_reset_confirm_view, logout_view, password_reset_sent_view, password_reset_complete_view, password_reset_request
 )
 
 app_name = "users"
@@ -14,7 +14,6 @@ urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", login_page, name="login-page"),
     path("change-password/", ChangePasswordView.as_view(), name="change_password"),
-    path("password-reset/", PasswordResetRequestView.as_view(), name="password_reset"),
     path("password-reset-sent/", password_reset_sent_view, name="password_reset_sent"),
     path("password-reset-confirm/<uidb64>/<token>/", password_reset_confirm_view, name="password_reset_confirm"),
     path("password-reset-complete/", password_reset_complete_view, name="password_reset_complete"),
@@ -27,10 +26,11 @@ urlpatterns = [
     path("registration-success/", registration_success_view, name="registration_success"),
 
     # Сторінки для відновлення пароля
+    path("password-reset/", password_reset_request, name="password_reset"),
     path("password-reset-form/", password_reset_form_view, name="password_reset_form"),
-    path("password-reset-done/", password_reset_done_view, name="password_reset_done"),
-    path("password-reset-confirm-page/", password_reset_confirm_view, name="password_reset_confirm_page"),
     path("password-reset-sent/", password_reset_sent_view, name="password_reset_sent"),
+    path("password-reset-confirm/<uidb64>/<token>/", password_reset_confirm_view, name="password_reset_confirm"),
+    path("password-reset-complete/", password_reset_complete_view, name="password_reset_complete"),
 
     # Вихід з системи
     path("logout/", logout_view, name="logout"),
