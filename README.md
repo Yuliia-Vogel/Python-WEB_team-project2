@@ -91,6 +91,28 @@ The server will be stopped. However all your data (user account, your contacts, 
 
 
 
+-------------
+Запуск тестів
+-------------
 
+Запуск всіх тестів:
+'''
+python src/manage.py test
+''' 
 
+Запуск тестів для конкретного додатку:
+'''
+python src/manage.py test files 
+'''
+(На останнє місце замість "files" слід підставити назву потрібного блоку додатку: contacts, files, news, notes, users)
+
+Запуск конкретного тестового класу:
+'''
+python src/manage.py test files.tests.FileUploadTest
+'''
+
+Запуск конкретного тесту:
+'''
+python src/manage.py test files.tests.FileUploadTest.test_upload_file_success
+'''
 

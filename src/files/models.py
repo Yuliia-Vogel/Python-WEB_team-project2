@@ -22,6 +22,10 @@ class UploadedFile(models.Model):
                 print(f"Error deleting {self.public_id} from Cloudinary: {e}")  # Лог для відладки
         super().delete(*args, **kwargs)
 
+    def get_filename(self):
+        # Витягуємо ім'я файлу з URL
+        return self.file_url.split("/")[-1]
+
 
     def __str__(self):
         return f"File uploaded by {self.user}"

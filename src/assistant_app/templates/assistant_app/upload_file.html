@@ -4,9 +4,27 @@
 
 {% block content %}
     <h2>Upload a File</h2>
+
+    <p><strong>Upload Limits:</strong></p>
+    <ul>
+        <li>Maximum image file size: 10 MB</li>
+        <li>Maximum video file size: 100 MB</li>
+        <li>Maximum raw file size: 10 MB</li>
+        <li>Maximum image megapixels: 25 MP</li>
+        <li>Maximum total megapixels in all frames: 50 MP</li>
+        <li><strong>File extensions not allowed:</strong> .exe</li>
+    </ul>
+    
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Upload</button>
     </form>
+
+    {% if error %}
+        <div class="alert alert-warning">{{ error }}</div>
+    {% endif %}
+
 {% endblock %}
+
+
