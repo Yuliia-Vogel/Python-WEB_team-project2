@@ -1,0 +1,83 @@
+1. Примусове видалення файлів з Cloudinary
+Деякі файли можуть не видалятися через особливості збереження ресурсів у Cloudinary. Для resource_type="raw" можна спробувати примусове видалення (invalidate=True), яке гарантує, що кешовані копії теж будуть видалені.
+
+🔹 Онови метод видалення в CloudinaryService:
+
+python
+Копіювати
+Редагувати
+import cloudinary.api
+
+class CloudinaryService:
+    @staticmethod
+    def delete_file(public_id, resource_type="raw"):
+        try:
+            print(f"Services. Attempting to delete file with : {public_id}")
+            response = cloudinary.api.delete_resources(
+                [public_id], resource_type=resource_type, invalidate=True
+            )
+            print(f"Services. Cloudinary delete response: {response}")
+            return response
+        except cloudinary.api.NotFound:
+            print(f"Services. File not found on Cloudinary: {public_id}")
+            return None  # Просто повертаємо None, щоб не падало з 500
+        except Exception as e:
+            print(f"Services. Unexpected error while deleting {public_id}: {e}")
+            return None
+✅ Це примусово видалить файл і його кешовані копії.
+
+2. Обробка помилки та рендеринг сторінки
+Щоб користувач не отримував 500 Internal Server Error, додамо обробку у views.py.
+
+🔹 Онови views.py (функцію для видалення файлу):
+
+python
+Копіювати
+Редагувати
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from files.services import CloudinaryService
+from files.models import UploadedFile
+
+def delete_file_view(request, file_id):
+    file = UploadedFile.objects.get(id=file_id)
+    public_id = file.public_id
+    resource_type = file.resource_type
+
+    if CloudinaryService.delete_file(public_id, resource_type) is None:
+        messages.error(
+            request,
+            "Сталася помилка при видаленні файла з хмарного сховища. "
+            "Зверніться до розробників додатка Personal Assistant:<br><br>"
+            "<b>Yuliia Melnychenko: arwen.vogel@gmail.com</b><br>"
+            "VladPetrychuk: vladyslav.petrychuk42@gmail.com<br>"
+            "Kyrylo Dolia: fr1ghtn1ght2101@gmail.com<br>"
+            "Vlad Hetman: vladislavgetman704@gmail.com<br>"
+            "Oleksii Kozupytsia: sumyultras88@gmail.com"
+        )
+        return redirect("files_list")  # Замініть на реальний маршрут
+
+    file.delete()
+    messages.success(request, "Файл успішно видалено.")
+    return redirect("files_list")
+✅ Що тут відбувається?
+
+Якщо файл не вдалося видалити, виводиться повідомлення з імейлами команди.
+Твій імейл (arwen.vogel@gmail.com) підсвічується жирним шрифтом.
+Якщо видалення успішне – файл також видаляється з бази.
+Замість 500 помилки користувач отримає повідомлення.
+3. Відображення повідомлення на фронті
+Якщо в тебе ще немає шаблону для повідомлень, додай у base.html або files_list.html:
+
+html
+Копіювати
+Редагувати
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message|safe }}</div>
+  {% endfor %}
+{% endif %}
+✅ Це покаже повідомлення про успіх або помилку.
+
+Готово! ✅
+Тепер файли видаляються примусово, а у разі помилки користувач отримує зрозуміле повідомлення з контактами команди. 🔥

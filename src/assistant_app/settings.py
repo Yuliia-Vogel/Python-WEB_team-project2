@@ -161,6 +161,7 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
+            # 'level': 'DEBUG',
             'propagate': True,
         },
         'files': {  # Це простір імен для логера у додатку files
