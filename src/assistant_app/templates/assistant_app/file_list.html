@@ -3,7 +3,7 @@
 {% load custom_filters %}
 
 {% block content %}
-  <h2 class="file-title">Your Uploaded Files</h2>
+  <h2 class="file-title">Ваші завантажені файли</h2>
 
   <!-- Фільтр категорій -->
   <div class="file-links-container">
@@ -17,7 +17,7 @@
   </div>
 
 <div class="file-add-btn">
-  <a role="button" href="{% url 'files:upload_file' %}" class="">Upload new file</a>  
+  <a role="button" href="{% url 'files:upload_file' %}" class="">Завантажити новий файл</a>  
 </div>
   
   
@@ -34,7 +34,7 @@
               <div class="file-btn-container">
                   {% with file_extension=file.file_url|lower|slice:'-3:' %}
                       {% if file_extension in "pdf txt jpg jpeg png gif svg webp mp4 webm ogg mp3 wav" %}
-                          <a role="button" href="{{ file.file_url }}" target="_blank" class="">Огляд</a>
+                          <a role="button" href="{{ file.file_url }}" target="_blank" class="">Переглянути</a>
                       {% endif %}
                   {% endwith %}
 
