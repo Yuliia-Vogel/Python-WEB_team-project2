@@ -1,5 +1,5 @@
-<style>
-      header {
+
+    header {
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -228,5 +228,9 @@
       gap: 16px;
     }
 
-
-    </style>
+    .btn.active {
+      background-color: #00b478;
+      color: white;
+      font-weight: bold;
+    }
+    
