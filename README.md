@@ -1,154 +1,154 @@
 # Python-WEB_team-project Instruction
-The final team project for Python WEB at GO.IT school
+Фінальний командний проєкт для курсу Python WEB (школа GO.IT)
 
-## Docker Instructions
-For detailed instructions on using Docker, refer to [README.docker.md](README.docker.md).
+## Інструкція для частини проекту в Docker-образі
+Для детальної інструкції щодо використання Docker перегляньте [README.docker.md](README.docker.md).
 
-I. App description
-==================
-    This web-based Personal Assistant application is designed to help you stay organized by providing the following features:
-        * Creating and managing notes on any topic
-        * Storing and managing contacts
-        * Limited file storage for organizing and accessing your documents
-        * A news feed covering sports, Ukrainian politics, currency exchange rates, and weather updates
-    Access to all features requires registration to ensure the security and privacy of your data. 
-    Each user can access only their own personal data, which remains unavailable to other users and unauthorized individuals.
+I. Загальна інформація про додаток
+==================================
+    Цей веб-застосунок "Персональний асистент" (Personal Assistant) допоможе вам залишатися організованими, надаючи такі можливості: 
+        * Створення та керування нотатками на будь-яку тему.
+        * Збереження та керування контактами.
+        * Зберігання файлів невеликого розміру на хмарному сервісі та управління цими файлами.
+        * Новинна стрічка зі спортивними подіями, українською політикою, курсами валют та прогнозом погоди.
 
-II. App installation
-====================
-1) Open your VSCode or PyCharm and clone this repository.
+    Для доступу до всіх функцій необхідна реєстрація, щоб забезпечити безпеку та конфіденційність ваших даних.
+    Кожен користувач має доступ лише до своїх особистих даних, які недоступні іншим користувачам та неавторизованим особам.
 
-2) Create database Postgres in Docker. 
-    1. Open Docker desktop
-    2. Open the Command Line and run the following command:
+II. Встановлення додатку
+========================
+1) Відкрийте VSCode або PyCharm та склонуйте цей репозиторій.
+
+2) Створіть базу даних PostgreSQL у Docker. 
+    1. Відкрийте Docker Desktop
+    2. Відкрийте командний рядок та виконайте команду:
         ```
         docker run --name web_project_db -p 5432:5432 -e POSTGRES_PASSWORD=web_project_db_pass -d postgres
         ```
-    3. If you use the command above as is, you can use the default credentials provided in the .env.example file (marked as #Default) when setting up your .env file.
+    3. Якщо ви використовуєте команду вище без змін, то ви можете використовувати стандартні облікові дані з файлу .env.example (позначені як #Default).
 
-    Important:
+    Важливо:
 
-    If you already have PostgreSQL installed locally on your computer, you should change the external port to 5433 (or another free port) to avoid conflicts with your local PostgreSQL instance:
+    Якщо PostgreSQL вже встановлений локально на вашому комп’ютері, змініть зовнішній порт на 5433 (або інший вільний порт), щоб уникнути конфлікту:
         ```
         docker run --name web_project_db -p 5433:5432 -e POSTGRES_PASSWORD=web_project_db_pass -d postgres
         ```
-    If you choose to use custom credentials, make sure to save your database name and password, as they will be required in your .env file.
+    Якщо ви використовуєте власні облікові дані, збережіть ім’я бази та пароль, оскільки вони знадобляться у файлі .env.
 
-3)  Create and activate virtual environment (venv). 
-    1. To create venv write the command in terminal of your VSCode:
+3)  Створіть та активуйте віртуальне середовище (venv). 
+    1. Створіть venv за допомогою команди в терміналі VSCode:
         ```
         python -m venv venv
         ```
-4) To activate venv:
-    4a. For Windows write command in terminal:
+4) Активуйте venv:
+    4a. Для Windows додайте і виконайте таку команду в терміналі:
         ```
         venv\Scripts\Activate
         ```
-    4b. If you use cmd, write command:
+    4b. Якщо ви використовуєте cmd:
         ```
         venv\Scripts\activate.bat
         ```
-    4c. If you use poetry, write:
+    4c. Якщо використовуєте poetry:
         ```
         poetry shell
         ```
 
-5) Install poetry (if it’s not installed yet):
+5) Встановіть poetry (якщо він ще не встановлений):
         ```
         pip install poetry
         ```
 
-6) Install all dependencies for the application:
+6) Встановіть усі залежності проєкту:
     ```
     poetry install
     ```
 
-7) Create .env file 
-    1. In the root folder, create a .env file. You can use the .env.example file as a reference.
-    2. To generate a SECRET_KEY, run the following command:
+7) Створіть файл .env:
+    1. У кореневій папці створіть файл .env (можна взяти .env.example як зразок).
+    2. Згенеруйте SECRET_KEY за допомогою команди:
         ```
         poetry run python src/utils/gen_secret_key.py
         ```
-        This will generate a unique key. Add it as SECRET_KEY in your .env file.
+        В терміналі отримаєте ключ. Додайте отриманий ключ у файл .env.
     
-    3. Cloudinary Configuration:
-        You can use a preconfigured Cloudinary account by copying the credentials from the .env.example file (marked as #Default).
-        These credentials allow the app to interact with Cloudinary but do not grant access to the Cloudinary account itself. This means that uploaded files are not visible on the Cloudinary platform, even to those who have these credentials, ensuring the security of user files.
-        If you prefer to use your own Cloudinary account, register at Cloudinary, retrieve your credentials (CLOUD_NAME, API_KEY, and API_SECRET), and add them to your .env file.
+    3. Конфігурація Cloudinary:
+        Ви можете використовувати заздалегідь налаштований акаунт Cloudinary, скопіювавши облікові дані з .env.example (позначені як #Default).
+        Ці дані дозволяють додатку взаємодіяти з Cloudinary, але не дають доступу до акаунту. 
+        Якщо бажаєте використовувати власний акаунт Cloudinary, то перейдіть за посиланням [Cloudinary](https://cloudinary.com/), зареєструйтесь, отримайте облікові дані (CLOUD_NAME, API_KEY, API_SECRET) та додайте їх у файл .env.
 
-8) Apply migration of data to database:
+8) Застосуйте міграції до бази даних:
     ```
     poetry run python src/manage.py migrate
     ```
-9) Run the server:
+9) Запустіть сервер:
     ```
     python src/manage.py runserver
     ```
-10) Follow the link http://127.0.0.1:8000/ and start the work with Personal Assistant in web-browser.
+10) Відкрийте браузер за посиланням http://127.0.0.1:8000/ Можна працювати з Персональним Асистентом (Personal Assistant) через веб-інтерфейс.
 
-11) To use the Personal Assistant, the registration is needed.
+11) Для використання сервісу необхідна реєстрація.
 
-12) If you forget your parrword, you can press the bottom "Forget password", and the link will be sent to your email. Please enter your email-box and follow this link to create your new password. Please follow the instruction via the link.
+12) Якщо ви забули пароль, натисніть кнопку "Забули пароль", і вам на пошту прийде лист з посиланням на його відновлення. Слідуйте отриманим інструкціям.
 
-13) All the data will be saved in the PostgreSQL database inside the docker-container.
+13) Всі дані зберігаються у базі даних PostgreSQL всередині Docker-контейнера.
 
-14) Uploaded files will be sorten into 6 categories (images, documents, videos, audio, archives and other) and saved in Cloudinery storage in the appropriate folder ("images", "documents", "videos", "audio", "archives" or "other"). You can upload your file into Personal Assistant, view it (if possible depending on its format), download it or delete it from the cloud storage and from current web-application.
+14) Завантажені файли будуть автоматично сортуватися у 6 категорій (зображення, документи, відео, аудіо, архіви, інше) та зберігатися у відповідних папках у Cloudinary. Ви можете завантажувати, переглядати (якщо формат підтримується), завантажувати або видаляти файли.
 
-15) Please keep in mind usage limits regarding files uploading:
-    Maximum image file size - 10 MB
-    Maximum video file size - 100 MB
-    Maximum online image manipulation size - 100 MB
-    Maximum raw file size - 10 MB
-    Maximum image megapixels - 25 MP
-    Maximum total number of megapixels in all frames - 50 MP
+15) Обмеження щодо завантаження файлів::
+    Максимальний розмір зображень – 10 МБ
+    Максимальний розмір відео – 100 МБ
+    Максимальний розмір необробленого файлу – 10 МБ
+    MМаксимальна кількість мегапікселів для зображення – 25 MP
+    Максимальна кількість мегапікселів у всіх кадрах – 50 MP
     --------------------------------------
-    .exe and .bat file extensions are forbidden.
+    Заборонені розширення: .exe, .bat
     --------------------------------------
 
-16) If you need some info for demo, you can create 50 fake contacts and 50 fake notes using Faker package.
-First, register at least one user, and then run the command:
+16) Якщо вам потрібні тестові дані, ви можете створити 50 фейкових контактів і 50 фейкових нотаток:
     ```
     poetry run python src/utils/gen_fake_data.py
     ```
+    (Перед виконанням команди зареєструйте хоча б одного користувача).
 
-17) Finally, to stop the Personal Assistant, go to the terminal where server is running, and press Ctrl+C.
-The server will be stopped. All your data (user account, your contacts, notes, tags and files will be saved.)
-
-
-III. System Requirements
-========================
-    Operating System: Windows, macOS, or Linux
-    Python Version: 3.11 or higher, but lower than 3.13
-    Package Manager: Poetry
-    Database: PostgreSQL (for creation in Docker)
-    Additional Requirements: Docker (for running PostgreSQL in a container)
+17) Щоб зупинити Персонального Асистента, перейдіть у термінал, де працює сервер, і натисніть Ctrl+C. 
+Всі ваші дані (обліковий запис, контакти, нотатки, теги та файли) залишаться збереженими.
 
 
-IV. Running Tests ()
+III. Системні вимоги
 ====================
-    To run all tests:
+    Операційна система: Windows, macOS або Linux
+    Версія Python: 3.11 або вище, але нижче ніж 3.13
+    Менеджер пакетів: Poetry
+    База даних: PostgreSQL (створюється в Docker)
+    Додаткові вимоги: Docker (для запуску PostgreSQL у контейнері)
+
+
+IV. Запуск тестів
+====================
+    Щоб запустити всі тести:
         ```
         python src/manage.py test
         ``` 
     --------------------------------
-    To run tests for a specific app:
+    Щоб запустити тести для окремого застосунку (наприклад, для files):
         ```
         python src/manage.py test files 
         ```
-        (Replace "files" with the name of the required app: contacts, files, news, notes, users)
+        (Замініть "files" на назву необхідного блоку: contacts, files, news, notes, users)
     -----------------------------
-    To run a specific test class:
+    Щоб запустити окремий клас тестів (наприклад, FileUploadTest у застосунку files):
         ```
         python src/manage.py test files.tests.FileUploadTest
         ```
-        (Replace "files" with the name of the required app: contacts, files, news, notes, users; 
-        and replace "FileUploadTest" with the name of the required test class)
+        (Замініть "files" на назву необхідного блоку: contacts, files, news, notes, users; 
+        також замініть "FileUploadTest" на назву необхідного класу тестів)
     ------------------------
-    To run a specific test::
+    Щоб запустити конкретний тест (наприклад, test_upload_file_success):
         ```
         python src/manage.py test files.tests.FileUploadTest.test_upload_file_success
         ```
-        (Replace "files" with the name of the required app: contacts, files, news, notes, users; 
-        and replace "FileUploadTest" with the name of the required test class,
-        and replace "test_upload_file_success" with the name of the test)
+        (Замініть "files" на назву необхідного блоку: contacts, files, news, notes, users; 
+        також замініть "FileUploadTest" на назву необхідного класу тестів,
+        та замініть "test_upload_file_success" на назву відповідного тесту.)
 
