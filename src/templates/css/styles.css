@@ -229,8 +229,13 @@
     }
 
     .btn.active {
-      background-color: #00b478;
-      color: white;
+      color: #21E299;
       font-weight: bold;
+      text-decoration-color: #00B478;
+    }
+    
+    .btn.active:hover {
+      color: #70FCBA;
+      text-decoration-color: #70FCBA;
     }
     
