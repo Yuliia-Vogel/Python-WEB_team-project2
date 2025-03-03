@@ -1,0 +1,236 @@
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(var(--pico-background-color-rgb), 0.9);
+        border-bottom: 1px solid var(--pico-header-border-color);
+        box-shadow: var(--pico-card-box-shadow);
+        backdrop-filter: blur(15px);
+      }
+      header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header-title {
+        text-decoration: none;
+      }
+      .header-title h1 {
+        margin: 0;
+      }
+
+      aside {
+        position: sticky;
+        top: 7rem;
+        align-self: start;
+        background: rgba(var(--pico-background-color-rgb), 0.9);
+        border-right: 1px solid var(--pico-header-border-color);
+        padding: 1rem;
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+      }
+
+      main {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 10.5rem 1fr 10.5rem;
+        grid-template-areas:
+          "menu header table-of-content"
+          "menu body table-of-content";
+      }
+
+      .main-content-container {
+        margin-top: 36px;
+      }
+
+      .auth_btn {
+        margin: 0;
+        padding: 5px 10px 5px 10px;
+        display: flex;
+        align-self: center;
+      }
+
+      
+
+      .note-search {
+        margin-bottom: 42px;
+      }
+
+      ul,
+      ol {
+        list-style: none;
+        padding-left: 0; 
+      }
+
+      ul li,
+      ol li {
+        list-style: none;
+      }
+
+      .note-filter-container {
+      display: flex;
+      justify-content:center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .tag-filter-form {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+
+    .tags-container {
+      margin-top: 28px;
+    }
+
+    .tags-title {
+      margin-bottom: 24px;
+      display: flex; 
+      justify-self: center;
+    }
+
+    .tags-add-btn {
+      display: flex; 
+      justify-self: center;
+    }
+
+    .tag-del-btn {
+      color: #EE402E;
+      text-decoration: none;
+    }
+    
+    .tag-del-btn:hover {
+      color: #F06048;
+    }
+
+    .tags-content {
+      display: flex; 
+      justify-content:space-between;
+    }
+
+    .news-title {
+      display: flex;
+      justify-self: center;
+    }
+
+    .news-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      gap: 15px;
+    }
+
+    table td {
+      transition: outline 0.5s ease;
+    }
+
+    table td:hover {
+      outline: 2px solid #00b478;
+    }
+
+    .contact-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .file-links-container {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-bottom: 36px;
+    }
+
+    .file-title {
+      display: flex;
+      justify-self: center;
+      margin-bottom: 28px;
+    }
+
+    .file-list-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 34px;
+    }
+
+    .file-add-btn {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .file-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 950px;
+    }
+
+    .file-link-container {
+      display: flex;
+      gap: 24px;
+      width: 60%;
+    }
+
+    .file-btn-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    .file-del-btn {
+      margin: 0;
+      background-color: #AF291D;
+      border: none;
+    }
+
+    .file-del-btn:hover {
+      background-color: #C52F21;
+    }
+
+    .upload-file-title {
+      margin-bottom: 56px;
+    }
+
+    .upload-card {
+      display: flex; 
+      width: 950px; 
+      justify-self: center;
+    }
+
+    .file-alert-msg {
+      margin-top: 24px;
+    }
+
+    .conf-del-bts {
+      display: flex;
+      gap: 24px;
+    }
+
+    .conf-del-bts button {
+      margin: 0;
+    }
+
+    .contact-del-btn {
+      background-color: #AF291D;
+      border: none;
+    }
+
+    .contact-del-btn:hover {
+      background-color: #C52F21;
+    }
+
+    .contact-details-btns {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn.active {
+      background-color: #00b478;
+      color: white;
+      font-weight: bold;
+    }
+    

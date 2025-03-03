@@ -1,14 +1,14 @@
-from pprint import pprint
-
 import os
 import uuid
 import logging
 import requests
-from django.http import JsonResponse
 import cloudinary.uploader
+from django.http import JsonResponse, HttpResponse
+from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from pprint import pprint
+
 from assistant_app import settings
 from files.forms import UploadFileForm
 from files.models import UploadedFile
@@ -111,7 +111,7 @@ def upload_file(request):
         if file_extension.lower() in FORBIDDEN_EXTENSIONS:
             return render(request, 'assistant_app/upload_file.html', {
                 'form': UploadFileForm(),
-                'error': "Exe and bat files are not allowed to upload."
+                'error': "Файли з розширенням 'exe' та 'bat' не дозволено завантажувати."
             })
 
         form = UploadFileForm(request.POST, request.FILES)
@@ -134,11 +134,18 @@ def upload_file(request):
             logger.info(f"Uploading: {uploaded_file.name}")
 
             # Зберігаємо інформацію про файл у базі даних
-            UploadedFile.objects.create(
-                user=request.user, 
-                file_url=uploaded_data["secure_url"],
-                public_id=uploaded_data["public_id"]
-            )
+            try:
+                UploadedFile.objects.create(
+                    user=request.user, 
+                    file_url=uploaded_data["secure_url"],
+                    public_id=uploaded_data["public_id"]
+                )
+            except IntegrityError:
+                logger.warning(f"File with public_id '{uploaded_data['public_id']}' already exists.")
+                return render(request, 'assistant_app/upload_file.html', {
+                    'form': UploadFileForm(),
+                    'error': "Файл з такою назвою вже існує. Спробуйте перейменувати його."
+                })
 
             return render(request, 'assistant_app/upload_success.html', {
                 'file_name': uploaded_file.name,
@@ -146,6 +153,7 @@ def upload_file(request):
             })
 
     return render(request, 'assistant_app/upload_file.html', {'form': UploadFileForm()})
+
 
 @login_required
 def file_list(request):
@@ -182,7 +190,7 @@ def download_file(request, file_id):
 
     if not file_url:
         logger.error(f"File URL not found for file ID {file_id}")
-        return HttpResponse("File not found", status=404)
+        return HttpResponse("Файл не знайдено", status=404)
 
     try:
         # Виконуємо запит для отримання файлу з Cloudinary
@@ -199,12 +207,12 @@ def download_file(request, file_id):
         else:
             logger.error(f"Error from Cloudinary, status code: {response.status_code}")
             # Якщо сервер Cloudinary повернув помилку (наприклад, 404 або інші), повертаємо помилку
-            return HttpResponse("File not found on Cloudinary", status=404)
+            return HttpResponse("Файл не знайдено на хмарному сховищі Cloudinary", status=404)
     
     except requests.exceptions.RequestException as e:
         # Якщо виникла помилка при виконанні запиту (наприклад, проблема з мережею)
         logger.error(f"Error occurred while retrieving the file: {str(e)}")
-        return HttpResponse(f"Error occurred while retrieving the file: {str(e)}", status=503)
+        return HttpResponse(f"Сталася прикра помилка в процесі пошуку цього файлу: {str(e)}", status=503)
     
 
 @login_required
