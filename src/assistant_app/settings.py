@@ -1,5 +1,5 @@
 import environ
-
+import sys
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+
+
+TESTING = "test" in sys.argv
 
 # load environmental variables:
 load_dotenv()
@@ -113,12 +116,12 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST="smtp.meta.ua"
-EMAIL_PORT=465
-EMAIL_USE_SSL=True
-EMAIL_HOST_USER="oleksii.kozupytsia@meta.ua"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER="sumyultras88@gmail.com"
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = "oleksii.kozupytsia@meta.ua"
+DEFAULT_FROM_EMAIL = "sumyultras88@gmail.com"
 
 
 # Якщо в майбутньому використовуватимеш REST API, можна додати:

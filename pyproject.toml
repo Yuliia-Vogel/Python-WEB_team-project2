@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "personal-assistent-project"
-version = "0.1.0"
-description = ""
-authors = ["KyryloDolia <fr1ghtn1ght2101@gmail.com>"]
+version = "1.0"
+description = "Web-based Personal Assistant application to save and manage contacts, notes, documant files and receive some news feed."
+authors = ["KyryloDolia <fr1ghtn1ght2101@gmail.com>, Yuliia Melnychenko <arwen.vogel@gmail.com>, VladPetrychuk <vladyslav.petrychuk42@gmail.com>, Vlad Hetman <vladislavgetman704@gmail.com>, Oleksii Kozupytsia <sumyultras88@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "*", from = "src" }]

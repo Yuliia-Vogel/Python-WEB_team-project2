@@ -1,62 +1,67 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
-    <h2>Контакти</h2>
+<!-- Combined Search and Birthday Filter Form -->
+<form
+    class="note-search"
+    role="search"
+    method="GET"
+    action="{% url 'contacts:contact-list' %}">
 
-    <!-- Combined Search and Birthday Filter Form -->
-    <form method="GET" action="{% url 'contacts:contact-list' %}">
-        <!-- Search Input -->
-        <div class="form-group">
-            <input
-                type="text"
-                class="form-control"
-                style="margin: 12px 0"
-                name="query"
-                placeholder="Пошук контактів..."
-                value="{{ request.GET.query }}"
-            />
-        </div>
+    <div role="group" class="form-group">
+    <input name="query" type="search" placeholder="Шукати контакти ({{ contacts|length }})" value="{{ request.GET.query }}"/>
+    
+    <input
+    type="number"
+    class="form-control"
+    style="width: 10%;"
+    name="days_ahead"
+    placeholder="🎂"
+    value="{{ request.GET.days_ahead }}"
+    min="0"
+    />
+    <input type="submit" value="Пошук" />
+      
+    </div>
 
-        <!-- Birthday Ahead Input -->
-        <div class="form-group">
-            <input
-                type="number"
-                class="form-control"
-                style="margin: 12px 0"
-                name="days_ahead"
-                placeholder="Днів до дня народження (наприклад, 7)"
-                value="{{ request.GET.days_ahead }}"
-                min="0"
-            />
-        </div>
+</form>
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary mt-2" style="margin-bottom: 12px">Застосувати фільтри</button>
-    </form>
+<div class="contact-btn-container">
+    <a role="button" href="{% url 'contacts:contact-create' %}" class="contact-add-btn">Додати контакт</a>
+</div>
 
-    <!-- Add Contact Button -->
-    <a href="{% url 'contacts:contact-create' %}" class="btn btn-success">Додати контакт</a>
+{% if request.GET.days_ahead %}
+<div style="display:flex; margin-bottom: 24px; justify-self: center;">
+  Показано контакти з днями народження через {{ request.GET.days_ahead }} днів.
+</div>
+{% endif %}
 
-    <!-- Contacts List -->
-    <ul class="list-group mt-3">
-        {% for contact in contacts %}
-            <li class="list-group-item">
-                <a href="{% url 'contacts:contact-detail' contact.pk %}">
-                    {{ contact.first_name }} {{ contact.last_name }}
-                    {% if contact.birthday %}
-                        ({{ contact.phone }})
-                    {% endif %}
-                </a>
-            </li>
-        {% empty %}
-            <li class="list-group-item">Немає контактів.</li>
-        {% endfor %}
-    </ul>
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Phone</th>
+      <th scope="col">Address</th>
+      <th scope="col">Birthday</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for contact in contacts %}
+    <tr
+      onclick="window.location.href='{% url 'contacts:contact-detail' contact.pk %}'"
+      style="cursor: pointer"
+    >
+      <td>{{ contact.first_name }} {{ contact.last_name }}</td>
+      <td>{% if contact.phone %} {{ contact.phone }} {% endif %}</td>
+      <td>{% if contact.address %} {{ contact.address }} {% endif %}</td>
+      <td>{% if contact.birthday %} {{ contact.birthday }} {% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4" class="text-center">Немає контактів.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-    <!-- Display Filter Message -->
-    {% if request.GET.days_ahead %}
-        <div class="alert alert-info mt-3">
-            Показано контакти з днями народження через {{ request.GET.days_ahead }} днів.
-        </div>
-    {% endif %}
-{% endblock %}
+ {% endblock %}
+

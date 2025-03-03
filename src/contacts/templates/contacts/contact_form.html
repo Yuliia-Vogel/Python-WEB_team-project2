@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>{% if object %}Редагувати{% else %}Додати{% endif %} контакт</h2>
+    <h2 style="display: flex; justify-self: center; margin-bottom: 64px">{% if object %}Редагувати{% else %}Додати{% endif %} контакт</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Зберегти</button>
-        <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Назад</a>
+        <div style="display: flex; gap: 16px; justify-content: center">
+            <button style="margin: 0; width: 100%;" type="submit">Зберегти</button>
+            <a role="button" href="{% url 'contacts:contact-list' %}" class="secondary">Назад</a>
+        </div>
     </form>
 {% endblock %}
 

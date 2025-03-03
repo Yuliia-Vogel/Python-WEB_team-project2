@@ -1,41 +1,59 @@
-{% extends "base.html" %}
-
-{% block content %}
-  <h2>Нотатки ({{ notes|length }})</h2>
-
-  <!-- Форма пошуку -->
-  <form method="GET" action="{% url 'notes:note-list' %}" class="mb-3">
-    <input type="text" name="q" placeholder="Пошук нотаток..." value="{{ search_query }}" class="form-control">
-    <button type="submit" class="btn btn-primary mt-2">Шукати</button>
+{% extends "base.html" %} {% block title %}Notes - Personal Assistant{% endblock%} {% block content %}
+<section>
+  <!-- Search Bar -->
+  <form
+    class="note-search"
+    role="search"
+    method="GET"
+    action="{% url 'notes:note-list' %}"
+  >
+    <input name="q" type="search" placeholder="Шукати нотатки ({{ notes|length }})" value="{{ search_query }}"/>
+    <input type="submit" value="Пошук" />
   </form>
 
-  <!-- Кнопка для додавання нової нотатки -->
-  <a href="{% url 'notes:note-create' %}" class="btn btn-primary">Додати нотатку</a>
+  <!-- Add New Note Button -->
+  <div class="note-filter-container">
+  <!-- Add New Note Button -->
+  <div class="note_btn_container">
+    <a href="{% url 'notes:note-create' %}" role="button">Додати нотатку</a>
+  </div>
 
-  <!-- Список нотаток -->
-  <ul class="list-group mt-3">
-    {% for note in notes %}
-      <li class="list-group-item">
-        <a href="{% url 'notes:note-detail' note.pk %}">{{ note.title }}</a>
-      </li>
-    {% empty %}
-      <li class="list-group-item">Немає нотаток.</li>
-    {% endfor %}
-  </ul>
-
-  <!-- Фільтр за тегами -->
-  <form method="GET" action="{% url 'notes:note-list' %}">
-    <label for="tag" aria-label="Фільтр за тегом">Фільтр за тегом:</label>
+  <!-- Tag Filter Form -->
+  <form style="gap: 10px;" method="GET" action="{% url 'notes:note-list' %}" class="tag-filter-form">
     <select name="tag" id="tag" onchange="this.form.submit()">
-        <option value="">Всі теги</option>
-        {% for tag in tags %}
-            <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>
-                {{ tag.name }}
-            </option>
-        {% endfor %}
+      {% for tag in tags %}
+      <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>{{ tag.name }}</option>
+      {% endfor %}
     </select>
-    <button type="button" onclick="document.getElementById('tag').value=''; this.form.submit();">
-        Скинути
+    <button
+      class="secondary"
+      type="button"
+      onclick="document.getElementById('tag').value=''; this.form.submit();"
+    >
+      Скинути
     </button>
-</form>
+  </form>
+</div>
+
+  <!-- List of Notes -->
+  <div class="notes-list">
+    {% if notes %}
+    <ul>
+      {% for note in notes %}
+      <li>
+        <article>
+          <h3>
+            <a href="{% url 'notes:note-detail' note.id %}">{{ note.title }}</a>
+          </h3>
+          <p>{{ note.content|truncatewords:20 }}</p>
+          <small>Created on: {{ note.created_at|date:"F j, Y" }}</small>
+        </article>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No notes found.</p>
+    {% endif %}
+  </div>
+</section>
 {% endblock %}

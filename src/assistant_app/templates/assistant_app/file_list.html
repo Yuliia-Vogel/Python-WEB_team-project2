@@ -3,42 +3,58 @@
 {% load custom_filters %}
 
 {% block content %}
-  <h2>Your Uploaded Files</h2>
+  <h2 class="file-title">Your Uploaded Files</h2>
 
   <!-- Фільтр категорій -->
-  <div>
-    <a href="{% url 'files:file_list' %}" class="btn {% if selected_category == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
-    <a href="{% url 'files:file_list' %}?category=images" class="btn {% if selected_category == 'images' %}btn-primary{% else %}btn-secondary{% endif %}">Images</a>
-    <a href="{% url 'files:file_list' %}?category=documents" class="btn {% if selected_category == 'documents' %}btn-primary{% else %}btn-secondary{% endif %}">Documents</a>
-    <a href="{% url 'files:file_list' %}?category=videos" class="btn {% if selected_category == 'videos' %}btn-primary{% else %}btn-secondary{% endif %}">Videos</a>
-    <a href="{% url 'files:file_list' %}?category=audio" class="btn {% if selected_category == 'audio' %}btn-primary{% else %}btn-secondary{% endif %}">Audio</a>
-    <a href="{% url 'files:file_list' %}?category=archives" class="btn {% if selected_category == 'archives' %}btn-primary{% else %}btn-secondary{% endif %}">Archives</a>
-    <a href="{% url 'files:file_list' %}?category=other" class="btn {% if selected_category == 'other' %}btn-primary{% else %}btn-secondary{% endif %}">Other</a>
+  <div class="file-links-container">
+    <a href="{% url 'files:file_list' %}" class="btn {% if selected_category == 'all' %}{% else %}{% endif %}">All</a>
+    <a href="{% url 'files:file_list' %}?category=images" class="btn {% if selected_category == 'images' %}{% else %}{% endif %}">Images</a>
+    <a href="{% url 'files:file_list' %}?category=documents" class="btn {% if selected_category == 'documents' %}{% else %}{% endif %}">Documents</a>
+    <a href="{% url 'files:file_list' %}?category=videos" class="btn {% if selected_category == 'videos' %}{% else %}{% endif %}">Videos</a>
+    <a href="{% url 'files:file_list' %}?category=audio" class="btn {% if selected_category == 'audio' %}{% else %}{% endif %}">Audio</a>
+    <a href="{% url 'files:file_list' %}?category=archives" class="btn {% if selected_category == 'archives' %}{% else %}{% endif %}">Archives</a>
+    <a href="{% url 'files:file_list' %}?category=other" class="btn {% if selected_category == 'other' %}{% else %}{% endif %}">Other</a>
   </div>
 
-  <ul>
-    {% for file in files %}
+<div class="file-add-btn">
+  <a role="button" href="{% url 'files:upload_file' %}" class="">Upload new file</a>  
+</div>
+  
+  
+  <div class="file-list-container">
+    <ul>
+      {% for file in files %}
       <li>
-        <a href="{{ file.file_url }}" target="_blank">{{ file.file_url|basename }}</a> (uploaded at {{ file.uploaded_at }})
+          <article class="file-card">
+              <div class="file-link-container">
+                <span>{{ file.file_url|file_emoji }}</span>
+                <span class="file-extension">{{ file.file_url|lower|slice:'-3:'|upper }}</span>
+                <a href="{{ file.file_url }}" target="_blank">{{ file.file_url|basename|truncatechars:15 }}</a>
+              </div>
+              <div class="file-btn-container">
+                  {% with file_extension=file.file_url|lower|slice:'-3:' %}
+                      {% if file_extension in "pdf txt jpg jpeg png gif svg webp mp4 webm ogg mp3 wav" %}
+                          <a role="button" href="{{ file.file_url }}" target="_blank" class="">Огляд</a>
+                      {% endif %}
+                  {% endwith %}
 
-        {% with file_extension=file.file_url|lower|slice:'-3:' %}
-          {% if file_extension in "pdf txt jpg jpeg png gif svg webp mp4 webm ogg mp3 wav" %}
-            <a href="{{ file.file_url }}" target="_blank" class="btn btn-secondary">View</a>
-          {% endif %}
-        {% endwith %}
+                  <a role="button" href="{% url 'files:download_file' file.id %}" class="">Завантажити</a>
+                  <form action="{% url 'files:delete_file' file.id %}" method="post" >
+                    {% csrf_token %}
+                    <button class="file-del-btn" type="submit" class="" onclick="return confirm('Ви впевнені?')">Видалити</button>
+                  </form>
+              </div>
+          </article>
 
-        <a href="{% url 'files:download_file' file.id %}" class="btn btn-success">Download file</a>
-
-        <form action="{% url 'files:delete_file' file.id %}" method="post" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-        </form>
-        
-      </li>
-    {% empty %}
-      <li>No files uploaded yet.</li>
-    {% endfor %}
-  </ul>
-
-  <a href="{% url 'files:upload_file' %}" class="btn btn-primary">Upload new file</a>
-{% endblock %}
+  
+  
+  
+          
+        </li>
+        {% empty %}
+        <li>No files uploaded yet.</li>
+        {% endfor %}
+    </ul>
+  
+  {% endblock %}
+  </div>

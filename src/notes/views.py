@@ -18,7 +18,7 @@ class NoteListView(LoginRequiredMixin, ListView):
         queryset = Note.objects.filter(user=self.request.user)  # Нотатки тільки авторизованого користувача
 
         if tag:
-            queryset = queryset.filter(tags__name=tag)
+            queryset = queryset.filter(tags__id=tag)
         if search_query:
             queryset = queryset.filter(Q(title__icontains=search_query) | Q(content__icontains=search_query))
 

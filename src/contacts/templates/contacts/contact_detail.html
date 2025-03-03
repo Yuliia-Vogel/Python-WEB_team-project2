@@ -6,8 +6,10 @@
     <p>Email: {{ contact.email }}</p>
     <p>Address: {{ contact.address }}</p>
     <p>Birthday: {{ contact.birthday }}</p>
-    <a href="{% url 'contacts:contact-update' contact.pk %}" class="btn btn-warning">Редагувати</a>
-    <a href="{% url 'contacts:contact-delete' contact.pk %}" class="btn btn-danger">Видалити</a>
-    <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Назад</a>
+    <div class="contact-details-btns">
+        <a role="button" href="{% url 'contacts:contact-update' contact.pk %}">Редагувати</a>
+        <a class="contact-del-btn" role="button" href="{% url 'contacts:contact-delete' contact.pk %}">Видалити</a>
+        <a role="button" href="{% url 'contacts:contact-list' %}" class="secondary">Назад</a>
+    </div>
 {% endblock %}
 

@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Додати тег</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Зберегти</button>
-    <a href="{% url 'notes:tag-list' %}" class="btn btn-secondary">Назад</a>
-  </form>
+    <h2 style="display: flex; justify-self: center; margin-bottom: 64px">Додати тег</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div style="display: flex; gap: 16px; justify-content: center; margin-top: 32px">
+            <button style="margin: 0; width: 100%;" type="submit">Зберегти</button>
+            <a role="button" href="{% url 'notes:tag-list' %}" class="secondary" style="width: 100%;">Назад</a>
+        </div>
+    </form>
 {% endblock %}

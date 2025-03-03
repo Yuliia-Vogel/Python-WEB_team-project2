@@ -52,7 +52,7 @@ class FileUploadTest(TestCase):
 
         # Очікуємо, що файл з розширенням .exe буде відхилено
         self.assertEqual(response.status_code, 200) 
-        self.assertContains(response, "Exe files are not allowed to upload.")
+        self.assertContains(response, "Exe and bat files are not allowed to upload.")
 
 
 class FileDownloadTest(TestCase):
@@ -114,36 +114,3 @@ class FileDeleteTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-# class FileFilteringTest(TestCase):
-
-#     def setUp(self):
-#         self.user = User.objects.create_user(username="testuser", password="password")
-#         self.client.login(username="testuser", password="password")
-
-#         File.objects.create(user=self.user, file_url="https://cloudinary.com/img.jpg", category="images")
-#         File.objects.create(user=self.user, file_url="https://cloudinary.com/doc.pdf", category="documents")
-
-#     def test_filter_by_category(self):
-#         """Тест фільтрації файлів за категорією"""
-#         url = reverse("files:list") + "?category=images"
-#         response = self.client.get(url)
-
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(len(response.json()), 1)
-#         self.assertIn("img.jpg", response.json()[0]["file_url"])
-
-#     def test_filter_without_category(self):
-#         """Тест отримання всіх файлів, якщо категорія не вказана"""
-#         url = reverse("files:list")
-#         response = self.client.get(url)
-
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(len(response.json()), 2)
-
-#     def test_filter_invalid_category(self):
-#         """Тест фільтрації за неіснуючою категорією"""
-#         url = reverse("files:list") + "?category=nonexistent"
-#         response = self.client.get(url)
-
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(len(response.json()), 0)

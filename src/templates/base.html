@@ -1,79 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Personal Assistant{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.jade.min.css"
+    />
+    <style>
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(var(--pico-background-color-rgb), 0.9);
+        border-bottom: 1px solid var(--pico-header-border-color);
+        box-shadow: var(--pico-card-box-shadow);
+        backdrop-filter: blur(15px);
+      }
+      header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">Personal Assistant</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'notes:note-list' %}">Notes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'notes:tag-list' %}">Tags</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contacts:contact-list' %}">Contacts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'files:file_list' %}">Files</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'news:news_summary' %}">News</a>
-                        </li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav d-flex align-items-center">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <span class="navbar-text text-light me-3">
-                                Привіт, {{ user.username }}!
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light">Вийти</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light me-2" href="{% url 'users:login_page' %}">Увійти</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light me-2" href="{% url 'users:register_page' %}">Реєстрація</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+      .header-title {
+        text-decoration: none;
+      }
+      .header-title h1 {
+        margin: 0;
+      }
 
-    <div class="container mt-4">
-        {% if messages %}
-            <div class="mb-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% block content %}{% endblock %}
-    </div>
+      aside {
+        position: sticky;
+        top: 7rem;
+        align-self: start;
+        background: rgba(var(--pico-background-color-rgb), 0.9);
+        border-right: 1px solid var(--pico-header-border-color);
+        padding: 1rem;
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+      }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+      main {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 10.5rem 1fr 10.5rem;
+        grid-template-areas:
+          "menu header table-of-content"
+          "menu body table-of-content";
+      }
+
+      .main-content-container {
+        margin-top: 36px;
+      }
+
+      .auth_btn {
+        margin: 0;
+        padding: 5px 10px 5px 10px;
+        display: flex;
+        align-self: center;
+      }
+
+      
+
+      .note-search {
+        margin-bottom: 42px;
+      }
+
+      ul,
+      ol {
+        list-style: none;
+        padding-left: 0; 
+      }
+
+      ul li,
+      ol li {
+        list-style: none;
+      }
+
+      .note-filter-container {
+      display: flex;
+      justify-content:center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .tag-filter-form {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+
+    .tags-container {
+      margin-top: 28px;
+    }
+
+    .tags-title {
+      margin-bottom: 24px;
+      display: flex; 
+      justify-self: center;
+    }
+
+    .tags-add-btn {
+      display: flex; 
+      justify-self: center;
+    }
+
+    .tag-del-btn {
+      color: #EE402E;
+      text-decoration: none;
+    }
+    
+    .tag-del-btn:hover {
+      color: #F06048;
+    }
+
+    .tags-content {
+      display: flex; 
+      justify-content:space-between;
+    }
+
+    .news-title {
+      display: flex;
+      justify-self: center;
+    }
+
+    .news-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      gap: 15px;
+    }
+
+    table td {
+      transition: outline 0.5s ease;
+    }
+
+    table td:hover {
+      outline: 2px solid #00b478;
+    }
+
+    .contact-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .file-links-container {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-bottom: 36px;
+    }
+
+    .file-title {
+      display: flex;
+      justify-self: center;
+      margin-bottom: 28px;
+    }
+
+    .file-list-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 34px;
+    }
+
+    .file-add-btn {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .file-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 950px;
+    }
+
+    .file-link-container {
+      display: flex;
+      gap: 24px;
+      width: 60%;
+    }
+
+    .file-btn-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    .file-del-btn {
+      margin: 0;
+      background-color: #AF291D;
+      border: none;
+    }
+
+    .file-del-btn:hover {
+      background-color: #C52F21;
+    }
+
+    .upload-file-title {
+      margin-bottom: 56px;
+    }
+
+    .upload-card {
+      display: flex; 
+      width: 950px; 
+      justify-self: center;
+    }
+
+    .file-alert-msg {
+      margin-top: 24px;
+    }
+
+    .conf-del-bts {
+      display: flex;
+      gap: 24px;
+    }
+
+    .conf-del-bts button {
+      margin: 0;
+    }
+
+    .contact-del-btn {
+      background-color: #AF291D;
+      border: none;
+    }
+
+    .contact-del-btn:hover {
+      background-color: #C52F21;
+    }
+
+    .contact-details-btns {
+      display: flex;
+      gap: 16px;
+    }
+
+
+    </style>
+  </head>
+  <body style="min-height: 1071px">
+    <header class="is-fixed-above-lg is-fixed">
+      <div class="container">
+        <a class="header-title" href="/"><h1>Personal Assistant</h1></a>
+        <nav>
+          <ul>
+            {% if user.is_authenticated %}
+            <li>
+              <form method="post" action="{% url 'users:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="auth_btn contrast outline">Вийти</button>
+              </form>
+            </li>
+            {% else %}
+            <li>
+              <a class="contrast" href="{% url 'users:login_page' %}">Увійти</a>
+            </li>
+            <li>
+              <a class="contrast" href="{% url 'users:register_page' %}"
+                >Реєстрація</a
+              >
+            </li>
+            {% endif %}
+            <li>
+              <button class="outline contrast" onclick="toggleTheme()">
+                <div style="width: 24px; height: 24px">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-lamp-desk"
+                  >
+                    <path d="m14 5-3 3 2 7 8-8-7-2Z"></path>
+                    <path d="m14 5-3 3-3-3 3-3 3 3Z"></path>
+                    <path d="M9.5 6.5 4 12l3 6"></path>
+                    <path
+                      d="M3 22v-2c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2H3Z"
+                    ></path>
+                  </svg>
+                </div>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container has-table-of-contents page-classless">
+      <aside>
+        <nav>
+          <ul>
+            {% if user.is_authenticated %}
+            <li>
+              <a class="secondary" href="{% url 'news:news_summary' %}">📰 Новини</a>
+            </li>
+            <li>
+              <a class="secondary" href="{% url 'notes:note-list' %}">📝 Нотатки</a>
+            </li>
+            <li>
+              <a class="secondary" href="{% url 'notes:tag-list' %}">🏷️ Теги</a>
+            </li>
+            <li>
+              <a class="secondary" href="{% url 'contacts:contact-list' %}"
+                >📇 Контакти</a
+              >
+            </li>
+            <li>
+              <a class="secondary" href="{% url 'files:file_list' %}">📂 Файли</a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </aside>
+      <div class="main-content-container">
+        
+          {% block content %}{% endblock %}
+        
+      </div>
+    </main>
+  </body>
+
+  <script defer>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute("data-theme");
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    });
+  </script>
 </html>

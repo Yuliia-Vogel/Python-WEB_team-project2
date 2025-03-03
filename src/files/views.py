@@ -1,4 +1,7 @@
+from pprint import pprint
+
 import os
+import uuid
 import logging
 import requests
 from django.http import JsonResponse
@@ -6,8 +9,9 @@ import cloudinary.uploader
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UploadFileForm
-from .models import UploadedFile
+from assistant_app import settings
+from files.forms import UploadFileForm
+from files.models import UploadedFile
 
 CATEGORY_MAP = {
     "images": ["jpg", "jpeg", "png", "gif", "webp", "svg"],
@@ -17,7 +21,7 @@ CATEGORY_MAP = {
     "archives": ["zip", "rar", "7z", "tar", "gz"],
 }
 
-FORBIDDEN_EXTENSIONS = ['.exe']
+FORBIDDEN_EXTENSIONS = ['.exe', '.bat']
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +55,34 @@ def check_file_size(uploaded_file):
     return True, None
 
 
+def get_unique_public_id(folder_name, public_id):
+    """
+    Перевіряє, чи існує файл з таким public_id у Cloudinary.
+    Якщо існує, додає унікальний суфікс.
+    """
+    existing_files = []
+    next_cursor = None
+    
+    while True:
+        result = cloudinary.api.resources(type="upload", prefix=folder_name, next_cursor=next_cursor)
+        existing_files.extend(result['resources'])
+        next_cursor = result.get('next_cursor')
+        if not next_cursor:
+            break
+    # pprint(f'Existing files: {existing_files}')
+    
+    existing_file_ids = [file['public_id'].replace(f"{folder_name}/", "") for file in existing_files]
+
+    # pprint(f'Existing_file_ids: {existing_file_ids}')
+    
+    if public_id in existing_file_ids:
+        unique_suffix = uuid.uuid4().hex[:8]
+        public_id = f"{public_id}_{unique_suffix}"
+    
+    # print(f'Received public_id: {public_id}')
+    return public_id
+
+
 @login_required
 def upload_file(request):
     if request.method == 'POST':
@@ -58,57 +90,62 @@ def upload_file(request):
             return JsonResponse({"error": "File is required"}, status=400)
 
         uploaded_file = request.FILES['file']
-        
+
         # Перевірка на порожній файл
         if uploaded_file.size == 0:
-            form = UploadFileForm()  # Повторно ініціалізуємо форму, щоб не було помилки при рендерингу
             return render(request, 'assistant_app/upload_file.html', {
-                'form': form,
-                'error': "The file is empty."  # Передаємо повідомлення про помилку
+                'form': UploadFileForm(),
+                'error': "The file is empty."
             })
-        
+
         # Перевірка розміру файлу
         is_valid, error_message = check_file_size(uploaded_file)
         if not is_valid:
-            form = UploadFileForm()
             return render(request, 'assistant_app/upload_file.html', {
-                'form': form,
+                'form': UploadFileForm(),
                 'error': error_message
             })
 
         # Перевірка на заборонене розширення
         file_name, file_extension = os.path.splitext(uploaded_file.name)
         if file_extension.lower() in FORBIDDEN_EXTENSIONS:
-            form = UploadFileForm()  # Повторно ініціалізуємо форму
             return render(request, 'assistant_app/upload_file.html', {
-                'form': form,
-                'error': "Exe files are not allowed to upload."  # Повідомлення про заборонений файл
+                'form': UploadFileForm(),
+                'error': "Exe and bat files are not allowed to upload."
             })
 
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             category = get_file_category(uploaded_file.name)
             folder_name = f"users_files/{request.user.email}/{category}"
+
+            # Отримуємо унікальний public_id
+            file_name_without_ext, _ = os.path.splitext(uploaded_file.name)
+            public_id = get_unique_public_id(folder_name, file_name_without_ext)
+
+            # Завантажуємо файл у Cloudinary
             uploaded_data = cloudinary.uploader.upload(
                 uploaded_file,
                 folder=folder_name,
                 resource_type='auto',
-                public_id=uploaded_file.name
+                public_id=public_id
             )
+
             logger.info(f"Uploading: {uploaded_file.name}")
-            UploadedFile.objects.create(user=request.user, 
-                                        file_url=uploaded_data["secure_url"],
-                                        public_id=uploaded_data["public_id"])
+
+            # Зберігаємо інформацію про файл у базі даних
+            UploadedFile.objects.create(
+                user=request.user, 
+                file_url=uploaded_data["secure_url"],
+                public_id=uploaded_data["public_id"]
+            )
 
             return render(request, 'assistant_app/upload_success.html', {
                 'file_name': uploaded_file.name,
                 'file_url': uploaded_data["secure_url"]
             })
 
-    else:
-        form = UploadFileForm()
-    return render(request, 'assistant_app/upload_file.html', {'form': form})
-
+    return render(request, 'assistant_app/upload_file.html', {'form': UploadFileForm()})
 
 @login_required
 def file_list(request):
@@ -118,24 +155,25 @@ def file_list(request):
     valid_files = []
 
     for file in files:
-        try:
-            response = requests.head(file.file_url, timeout=5)  # Перевіряємо чи файл існує
-            if response.status_code == 200:
-                # Отримуємо назву папки з URL файлу
-                folder_name = file.file_url.split("/")[-2]  # передостанній елемент - це папка
+        if not settings.TESTING:  # Пропускаємо перевірку файлів у тестовому середовищі
+            try:
+                response = requests.head(file.file_url, timeout=5)  # Перевіряємо чи файл існує
+                if response.status_code == 200:
+                    # Отримуємо назву папки з URL файлу
+                    folder_name = file.file_url.split("/")[-2]  # передостанній елемент - це папка
 
-                # Фільтруємо за категорією
-                if category == "all" or folder_name == category:
-                    valid_files.append(file)
-        except requests.RequestException:
-            pass  # Файл не знайдено або інша помилка
+                    # Фільтруємо за категорією
+                    if category == "all" or folder_name == category:
+                        valid_files.append(file)
+            except requests.RequestException:
+                pass  # Файл не знайдено або інша помилка
 
     return render(request, "assistant_app/file_list.html", {
         "files": valid_files,
         "selected_category": category
     })
 
-
+ 
 @login_required
 def download_file(request, file_id):
     file = get_object_or_404(UploadedFile, id=file_id)

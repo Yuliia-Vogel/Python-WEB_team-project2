@@ -3,18 +3,18 @@
 {% block title %}File Deleted{% endblock %}
 
 {% block content %}
-    <h2>File was successfully deleted!</h2>
+    <h2>Файл був успішно видалений!</h2>
     
-    <p>The file <strong>{{ file_name }}</strong> has been permanently removed.</p>
+    <p>Файл <strong>{{ file_name }}</strong> був остаточно видалений.</p>
 
     <div>
-        <a href="{% url 'files:upload_file' %}" class="btn btn-primary">Upload new file</a>
-        <a href="{% url 'files:file_list' %}" class="btn btn-secondary">Back to list of your files</a>
+        <a role="button" href="{% url 'files:upload_file' %}" class="btn btn-primary">Завантажити новий файл</a>
+        <a role="button" href="{% url 'files:file_list' %}" class="btn btn-secondary">Назад до списку файлів</a>
     </div>
 
     <!-- Блок з повідомленням про перенаправлення -->
-    <div class="alert alert-danger mt-3" role="alert">
-        You will be redirected to your file list in <span id="countdown">5</span> seconds...
+    <div class="file-alert-msg">
+        Ви будете переадрестовані до списку файлів через <span id="countdown">5</span> секунд...
     </div>
 
     <script>

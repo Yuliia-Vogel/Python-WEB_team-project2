@@ -1,16 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Теги ({{ tags|length }})</h2>
-  <a href="{% url 'notes:tag-create' %}" class="btn btn-primary">Додати тег</a>
-  <ul class="list-group mt-3">
-    {% for tag in tags %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ tag.name }}
-        <a href="{% url 'notes:tag-delete' tag.pk %}" class="btn btn-danger btn-sm">Видалити</a>
-      </li>
-    {% empty %}
-      <li class="list-group-item">Немає тегів.</li>
-    {% endfor %}
-  </ul>
+  <div class="tags-title">
+
+    <h2>Теги ({{ tags|length }})</h2>
+  </div>
+  <div class="tags-add-btn">
+    <a role="button" href="{% url 'notes:tag-create' %}" class="">Додати тег</a>
+  </div>
+
+  <div class="tags-container">
+    <ul>
+      {% for tag in tags %}
+      <article>
+        <li class="tags-content">
+          {{ tag.name }}
+          <a class="tag-del-btn" href="{% url 'notes:tag-delete' tag.pk %}">Видалити</a>
+        </li>
+      </article>
+      {% empty %}
+      <article>
+        <l>Немає тегів.</li>
+      </article>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}

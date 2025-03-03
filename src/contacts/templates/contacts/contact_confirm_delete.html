@@ -6,7 +6,9 @@
     
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Так, видалити</button>
-        <a href="{% url 'contacts:contact-list' %}" class="btn btn-secondary">Скасувати</a>
+        <div class="conf-del-bts">
+            <button style="width: 25%" type="submit" class="btn btn-danger">Так, видалити</button>
+            <a role="button" href="{% url 'contacts:contact-list' %}" class="secondary">Скасувати</a>
+        </div>
     </form>
 {% endblock %}

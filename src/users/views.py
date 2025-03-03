@@ -10,6 +10,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from smtplib import SMTPDataError
+import logging
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -23,6 +25,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .models import CustomUser
 from .serializers import RegisterSerializer, LoginSerializer
 
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -53,17 +56,17 @@ def login_page(request):
 def password_reset_request(request):
     if request.method == "POST":
         email = request.POST.get("email")
-        
+
         if not email:
             messages.error(request, "Будь ласка, введіть електронну пошту.")
             return redirect("users:password_reset_form")
-        
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             messages.error(request, "Користувача з такою поштою не знайдено.")
             return redirect("users:password_reset_form")
-        
+
         # Генеруємо токен і посилання на відновлення пароля
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -71,21 +74,41 @@ def password_reset_request(request):
             reverse('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
         )
 
-        # Відправка листа через SendGrid або SMTP
-        send_mail(
-            'Відновлення пароля',
+        # Текст листа
+        email_body = (
             f'Вітаємо!\n\n'
             f'Ви запросили відновлення пароля для вашого акаунта.\n'
             f'Щоб скинути пароль, перейдіть за цим посиланням:\n{reset_link}\n\n'
             f'Якщо ви не надсилали цей запит, просто проігноруйте цей лист.\n\n'
-            f'Дякуємо!',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
+            f'Дякуємо!'
         )
-        
-        messages.success(request, "Інструкція з відновлення пароля надіслана на вашу електронну пошту.")
-        return redirect("users:password_reset_sent")
+
+        # Відправка листа з обробкою помилок
+        try:
+            send_mail(
+                'Відновлення пароля',
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False  # Міняємо на False, щоб ловити винятки
+            )
+            messages.success(request, "Інструкція з відновлення пароля надіслана на вашу електронну пошту.")
+            return redirect("users:password_reset_sent")
+
+        except SMTPDataError as e:
+            if e.smtp_code == 550:
+                logger.error(f"Перевищено ліміт відправлення пошти: {e}")
+                messages.error(request, "Досягнуто ліміт відправлення пошти. Будь ласка, спробуйте пізніше.")
+                return redirect("users:password_reset_form")
+            else:
+                logger.error(f"SMTP-помилка: {e}")
+                messages.error(request, "Не вдалося надіслати листа. Будь ласка, спробуйте пізніше.")
+                return redirect("users:password_reset_form")
+
+        except Exception as e:
+            logger.error(f"Несподівана помилка при відправленні листа: {e}")
+            messages.error(request, "Сталася несподівана помилка. Будь ласка, спробуйте пізніше.")
+            return redirect("users:password_reset_form")
 
     return render(request, "password_reset_form.html")
 

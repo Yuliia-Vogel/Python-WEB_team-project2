@@ -4,7 +4,9 @@
   <h2>{{ note.title }}</h2>
   <p>{{ note.content }}</p>
   <p><strong>Теги:</strong> {% for tag in note.tags.all %} {{ tag.name }} {% endfor %}</p>
-  <a href="{% url 'notes:note-edit' note.pk %}" class="btn btn-warning">Редагувати</a>
-  <a href="{% url 'notes:note-delete' note.pk %}" class="btn btn-danger">Видалити</a>
-  <a href="{% url 'notes:note-list' %}" class="btn btn-secondary">Назад</a>
-{% endblock %}
+  <div class="contact-details-btns">
+    <a role="button" href="{% url 'notes:note-edit' note.pk %}">Редагувати</a>
+    <a role="button" href="{% url 'notes:note-delete' note.pk %}" class="contact-del-btn">Видалити</a>
+    <a role="button" href="{% url 'notes:note-list' %}" class="secondary">Назад</a>
+  </div>
+  {% endblock %}
