@@ -111,7 +111,7 @@ def upload_file(request):
         if file_extension.lower() in FORBIDDEN_EXTENSIONS:
             return render(request, 'assistant_app/upload_file.html', {
                 'form': UploadFileForm(),
-                'error': "Exe and bat files are not allowed to upload."
+                'error': "Файли з розширенням 'exe' та 'bat' не дозволено завантажувати."
             })
 
         form = UploadFileForm(request.POST, request.FILES)
