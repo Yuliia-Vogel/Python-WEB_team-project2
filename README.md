@@ -1,8 +1,12 @@
+[![English](https://img.shields.io/badge/lang-english-blue)](README.en.md)
+[![Ukrainian](https://img.shields.io/badge/lang-ukrainian-yellow)](README.md)
+[![Docker](https://img.shields.io/badge/Docker-en-blue)](README.docker.md)
+[![Docker](https://img.shields.io/badge/Docker-uk-yellow)](README.docker.uk.md)
 # Python-WEB_team-project Instruction
 Фінальний командний проєкт для курсу Python WEB (школа GO.IT)
 
 ## Інструкція для частини проекту в Docker-образі
-Для детальної інструкції щодо використання Docker перегляньте [README.docker.md](README.docker.md).
+Для детальної інструкції щодо використання Docker перегляньте [README.docker.uk.md](README.docker.uk.md).
 
 I. Загальна інформація про додаток
 ==================================
