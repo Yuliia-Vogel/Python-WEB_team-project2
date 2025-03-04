@@ -2,7 +2,7 @@
 The final team project for Python WEB at GO.IT school
 
 ## Docker Instructions
-For detailed instructions on using Docker, refer to [README.docker.md](README.docker.md).
+For detailed instructions on using Docker, refer to [README.docker.md](README.docker.en.md).
 
 I. App description
 ==================
